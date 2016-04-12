@@ -1,0 +1,25 @@
+static class Area
+	{
+		public static double RightTriangle(double A, double B, double C)
+		{
+			// Checking
+			if (A <= 0 || B <= 0 || C <= 0)
+				throw new Exception("No one of the side of a triangle can be less than or equal to 0!");
+
+			// Searching for the hypotenuse
+			Swap(ref A, ref B);
+			Swap(ref B, ref C);
+
+			// Checking
+			if (A * A + B * B != C * C)
+				throw new Exception("This isn't Right Triangle!");
+
+			
+			return A * B / 2;
+		}
+
+		static void Swap(ref double A, ref double B)
+		{
+			if (A > B) { double temp = A;  A = B;  B = temp; }
+		}
+	}
