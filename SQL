@@ -62,6 +62,9 @@ ORDER BY NAME ASC
 --==================================================================================================
 -- SUBQUERIES
 --==================================================================================================
+DECLARE @Year	INT
+SET	@Year = 1997
+
 SELECT	C.ContactName
 ----------------------------------------------------------------------------------------------------
 FROM	Customers C
@@ -73,7 +76,7 @@ WHERE	(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
 							SELECT	O.OrderID
 							FROM	Orders O
 							WHERE	O.CustomerID = C.CustomerID AND
-								YEAR(O.OrderDate) = 1997
+								YEAR(O.OrderDate) = @Year
 							)
 						)
 				FROM	Products P
@@ -89,7 +92,7 @@ WHERE	(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
 									SELECT	O.OrderID
 									FROM	Orders O
 									WHERE	O.CustomerID = C.CustomerID AND
-										YEAR(O.OrderDate) = 1997
+										YEAR(O.OrderDate) = @Year
 									)
 				)
 				FROM	Products P
