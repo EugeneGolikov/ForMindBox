@@ -4,26 +4,26 @@
 --==================================================================================================
 SELECT	C.ContactName
 ----------------------------------------------------------------------------------------------------
-FROM		Customers C INNER JOIN Orders O 
-				ON C.CustomerID = O.CustomerID AND YEAR(O.OrderDate) = 1997
-  			INNER JOIN
-  			(	(	
-  					Products P1 INNER JOIN [Order Details] OD1
-  					ON P1.ProductID = OD1.ProductID AND P1.ProductName = 'Chai'
-  				)
-  				FULL JOIN
-  				(
-  					Products P2 INNER JOIN [Order Details] OD2
-  					ON P2.ProductID = OD2.ProductID AND P2.ProductName = 'Chocolade'
-  				)
-  				ON P1.ProductID = P2.ProductID
-  			) ON O.OrderID = OD1.OrderID OR O.OrderID = OD2.OrderID
+FROM	Customers C INNER JOIN Orders O 
+	ON C.CustomerID = O.CustomerID AND YEAR(O.OrderDate) = 1997
+  	INNER JOIN
+  	(	(	
+  			Products P1 INNER JOIN [Order Details] OD1
+  			ON P1.ProductID = OD1.ProductID AND P1.ProductName = 'Chai'
+  		)
+  		FULL JOIN
+  		(
+  			Products P2 INNER JOIN [Order Details] OD2
+  			ON P2.ProductID = OD2.ProductID AND P2.ProductName = 'Chocolade'
+  		)
+  		ON P1.ProductID = P2.ProductID
+  	) ON O.OrderID = OD1.OrderID OR O.OrderID = OD2.OrderID
 ----------------------------------------------------------------------------------------------------
 GROUP BY	C.ContactName
 ----------------------------------------------------------------------------------------------------
 HAVING		ISNULL(SUM(OD1.Quantity), 0) > 0 
-			    AND 
-			    ISNULL(SUM(OD2.Quantity), 0) = 0
+		AND 
+		ISNULL(SUM(OD2.Quantity), 0) = 0
 ----------------------------------------------------------------------------------------------------
 ORDER BY	C.ContactName ASC
 --==================================================================================================
@@ -34,26 +34,26 @@ ORDER BY	C.ContactName ASC
 --=================================================================================================
 -- PIVOT
 --=================================================================================================
-SELECT		NAME AS 'Имя контакта'
+SELECT	NAME AS 'Имя контакта'
 ----------------------------------------------------------------------------------------------------
 FROM
 (	SELECT	C.ContactName	AS NAME, 
-			P.ProductName	AS PRODUCT, 
-			OD.Quantity		AS QUANTITY
+		P.ProductName	AS PRODUCT, 
+		OD.Quantity	AS QUANTITY
 	FROM	Products P 
-			INNER JOIN [Order Details] OD	ON P.ProductID = OD.ProductID
-			INNER JOIN Orders O				    ON OD.OrderID = O.OrderID AND YEAR(O.OrderDate) = 1997
-			INNER JOIN Customers C			  ON C.CustomerID = O.CustomerID
+		INNER JOIN [Order Details] OD	ON P.ProductID = OD.ProductID
+		INNER JOIN Orders O		ON OD.OrderID = O.OrderID AND YEAR(O.OrderDate) = 1997
+		INNER JOIN Customers C		ON C.CustomerID = O.CustomerID
 	WHERE	P.ProductName = 'Chai' OR P.ProductName = 'Chocolade' 
 ) CustomTable
 ----------------------------------------------------------------------------------------------------
 PIVOT		(SUM(QUANTITY) FOR Product IN ([Chai], [Chocolade])) AS TempReport
 ----------------------------------------------------------------------------------------------------
-WHERE		ISNULL([Chai], 0) > 0 
-			  AND 
-			  ISNULL([Chocolade], 0) = 0
+WHERE	ISNULL([Chai], 0) > 0 
+	AND 
+	ISNULL([Chocolade], 0) = 0
 ----------------------------------------------------------------------------------------------------
-ORDER BY	NAME ASC
+ORDER BY NAME ASC
 --==================================================================================================
 -- END 
 --==================================================================================================
@@ -64,17 +64,17 @@ ORDER BY	NAME ASC
 --==================================================================================================
 SELECT	C.ContactName
 ----------------------------------------------------------------------------------------------------
-FROM		Customers C
+FROM	Customers C
 ----------------------------------------------------------------------------------------------------
-WHERE		(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
-							FROM	[Order Details] OD
-							WHERE	OD.ProductID = P.ProductID AND 
-									OD.OrderID IN	(
-														SELECT	O.OrderID
-														FROM	Orders O
-														WHERE	O.CustomerID = C.CustomerID AND
-																YEAR(O.OrderDate) = 1997
-													)
+WHERE	(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
+				FROM	[Order Details] OD
+				WHERE	OD.ProductID = P.ProductID AND 
+					OD.OrderID IN	(
+							SELECT	O.OrderID
+							FROM	Orders O
+							WHERE	O.CustomerID = C.CustomerID AND
+								YEAR(O.OrderDate) = 1997
+							)
 						)
 				FROM	Products P
 				WHERE	P.ProductName = 'Chai'
@@ -82,16 +82,16 @@ WHERE		(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
 			----------------------------------------------------------------------------------------
 			AND
 			----------------------------------------------------------------------------------------
-			(	SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
-							FROM	[Order Details] OD
-							WHERE	OD.ProductID = P.ProductID AND 
-									OD.OrderID IN	(
-														SELECT	O.OrderID
-														FROM	Orders O
-														WHERE	O.CustomerID = C.CustomerID AND
-																YEAR(O.OrderDate) = 1997
-													)
-						)
+			(SELECT	(	SELECT	ISNULL(SUM(OD.Quantity), 0)
+						FROM	[Order Details] OD
+						WHERE	OD.ProductID = P.ProductID AND 
+							OD.OrderID IN	(
+									SELECT	O.OrderID
+									FROM	Orders O
+									WHERE	O.CustomerID = C.CustomerID AND
+										YEAR(O.OrderDate) = 1997
+									)
+				)
 				FROM	Products P
 				WHERE	P.ProductName = 'Chocolade'
 			) = 0
